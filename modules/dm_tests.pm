@@ -2424,6 +2424,12 @@ sub render_msg {
             for my $optval (split /\s*,\s*/, $opts) {
                my ($opt,$val) = ($1,$2) if $optval =~ /(\w+)(?:\((.+)\))?/;
                ($opt,$val) = ($1,$2) if $optval =~ /^(\w+)=(\w+)$/;
+               #if($opt eq 'class') {
+               #   do_log("DEBUG TESTING CLASS REGEX AGAINST OPTVAL: ".$optval);
+               #   ($opt,$val) = ($1,$2) if $optval =~ /^(\w)+=(\w)+;*(\w)*$/;
+               #}
+               ($opt,$val) = ($1,$2) if $optval =~ /^(\w+)=(\w+;*\w+)$/ and $opt='class';
+               do_log("DEBUG: opt / val: ".$opt." / ".$val);
                $val = 1 if !defined $val;
                push @{$t_opts{$opt}}, $val;
 
@@ -2436,7 +2442,28 @@ sub render_msg {
          } else {
             my $border = (defined $t_opts{border}) ? $t_opts{border}[0] : 1;
             my $pad    = (defined $t_opts{pad}) ? $t_opts{pad}[0] : 5;
-            $table = "<table border=$border cellpadding=$pad>\n";
+            # No default value for id
+            my $id    = (defined $t_opts{id}) ? $t_opts{id}[0] : '';
+            $table = "<table border=$border cellpadding=$pad ";
+            if($id ne '') {
+               $table .= "id='$id' ";
+            }
+            
+            # Check class options, multiple classes separated by whitespace
+            if(defined $t_opts{class}) {
+               $table .= " class=\"";
+               my $foo = $t_opts{class}[0];
+               #do_log("DEBUG: t_opts{class}[0]: ".$t_opts{class}[0]);
+               #do_log("DEBUG: foo: ".$foo);
+               for my $htmlclass (split /\s*;\s*/, $t_opts{class}[0]) {
+                  #do_log("DEBUG: HTMLCLASS= ".$htmlclass);
+                  $table .= $htmlclass." ";
+               }
+               $table .= "\"";
+               }
+               # finally close table-tag
+            $table .= " debug=\"true\">";
+            
          }
 
          # Check for rrd options

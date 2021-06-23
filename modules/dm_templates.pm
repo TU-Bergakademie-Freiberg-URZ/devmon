@@ -1376,8 +1376,10 @@ sub read_message_file {
                $opt eq 'border' or
                $opt eq 'pad' or
                $opt eq 'noalarmsmsg' or
-               $opt eq 'alarmsonbottom') {
-            } elsif($opt eq 'rrd') {
+               $opt eq 'alarmsonbottom' or
+               $opt eq 'id' or
+               $opt eq 'class') { } 
+            elsif($opt eq 'rrd') {
                for my $rrd_opt (@{$t_opts{$opt}}) {
                   my $got_ds = 0;
                   for my $sub_opt (split /\s*;\s*/, $rrd_opt) {
